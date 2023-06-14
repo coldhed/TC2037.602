@@ -11,10 +11,12 @@ Santiago Rodríguez, A01025232
 
 (provide (all-defined-out))
 
+; helper function to check if a char is an operator
 (define (char-operator? char)
     (or (eq? char #\+) (eq? char #\-) (eq? char #\*) (eq? char #\/) (eq? char #\=) (eq? char #\^))
 )
 
+; delta-arithmetic defines the transitions between states
 (define (delta-arithmetic state char)
     (case state
         ['start
@@ -142,14 +144,20 @@ Santiago Rodríguez, A01025232
 )
 
 (struct dfa (func initial accept))
+; DFAs are defined by a transition function, an initial state and a list of accept states
 (define arithmetic-dfa (dfa delta-arithmetic 'start '(int float var exp spa par_close)))
 
 (define (evaluate-dfa a-dfa string)
+    ; main loop to evaluate until the string is empty
+    ; state saves us our current state
+    ; tokens saves the tokens found
+    ; currentToken saves the current token
     (let loop ([chars (string->list string)] [state (dfa-initial a-dfa)] [tokens '()] [currentToken '()])
         (cond
-            ; if the chars are empty return if the state is valid
+            ; if the chars are empty we have ended going through the string
             [(empty? chars)
-                (if (member state (dfa-accept a-dfa))
+                ; if the state is an accept state we return the tokens + the current token, unless its a space
+                (if (member state (dfa-accept a-dfa)) 
                     (if (eq? state 'spa)
                         (reverse tokens)
                         (reverse (cons (list state (list->string (reverse currentToken))) tokens))
@@ -159,10 +167,16 @@ Santiago Rodríguez, A01025232
             ]
             ; the next state is defined by the transition function
             [else
+                ; let values is like let but gets its variables from a (values _ _) expression
+                ; this let-values processes (car chars)
+                ; which for the dfa-func it returns our newState and found
+                ; where found is #f if we haven't finished a token, and the token if we have
                 (let-values ([(newState found) ((dfa-func a-dfa) state (car chars))])
                     (if found 
+                        ; if we found a token we add it to the tokens list
                         (loop (cdr chars) newState
                             (cons (list found (list->string (reverse currentToken))) tokens)
+                            ; if our current char is a space, we don't want it to be the start of currentToken
                             (if (eq? #\space (car chars))
                                 '()
                                 (list (car chars))

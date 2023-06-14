@@ -45,4 +45,18 @@ defmodule Listas do
 
   defp do_enlist([], res), do: Enum.reverse(res)
   defp do_enlist([head | tail], res), do: do_enlist(tail, [[head] | res])
+
+  def ends_in_four(list), do: do_ends_in_four(list, [])
+
+  defp do_ends_in_four([], new_list), do: Enum.reverse(new_list)
+
+  defp do_ends_in_four([head | tail], new_list) do
+    if rem(head, 10) == 4 do
+      do_ends_in_four(tail, [head | new_list])
+    else
+      do_ends_in_four(tail, new_list)
+    end
+  end
+
+  # defp do_ends_in_four([head | tail], new_list), do: do_ends_in_four(tail, (if rem(head, 10) == 4, do: [head | new_list], else: new_list))
 end

@@ -1,0 +1,30 @@
+# BNF
+
+<elixir-module> ::= defmodule <module-name> do <module-body> end
+
+<module-name> ::= <uppercase-letter><string>
+<string> ::= "" | <letter> | <letter><string>
+
+<module-body> ::= <function><module-body> | ""
+<function> ::= <public-function> | <private-function>
+
+<public-function> ::= <public-standard-function> | <public-line-function> | <public-when-function>
+<public-standard-function> ::= def <function-name>(<function-arguments>) do <function-body> end
+<public-line-function> ::= def <function-name>(<function-arguments>), do: <function-line-body>
+<public-when-function> ::= def <function-name>(<function-arguments>) when <conditional>, do: <function-line-body>
+
+<private-function> ::= <private-standard-function> | <private-line-function> | <private-when-function>
+<private-standard-function> ::= def <function-name>(<function-arguments>) do <function-body> end
+<private-line-function> ::= def <function-name>(<function-arguments>), do: <function-line-body>
+<private-when-function> ::= def <function-name>(<function-arguments>) when <conditional>, do: <function-line-body>
+
+# EBNF
+
+ELIXIR-MODULE ::= 'defmodule ' MODULE-NAME ' do ' MODULE-BODY ' end'
+
+MODULE-NAME ::= UPPERCASE-LETTER [{LETTER}]
+
+MODULE-BODY ::= [{FUNCTION}]
+FUNCTION  ::= STANDARD-FUNCTION | LINE-FUNCTION
+STANDARD-FUNCTION ::= ('def ' | 'defp ') FUNCTION-NAME '(' FUNCTION-ARGUMENTS ') do ' FUNCTION-BODY ' end'
+LINE-FUNCTION ::= ('def ' | 'defp ') FUNCTION-NAME '(' FUNCTION-ARGUMENTS ') [' when ' CONDITIONAL] ', do: ' LINE-FUNCTION-BODY
